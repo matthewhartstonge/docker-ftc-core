@@ -2,6 +2,8 @@ FROM alpine:latest
 LABEL maintainer Matthew Hartstonge <matt@mykro.co.nz>
 
 ENV BUILD_DIR /tmp
+ENV BUILD_JOBS 4
+ENV BUILD_PLATFORM x86_64-linux-musl
 ENV DB_VERSION 4.8.30.NC
 ENV DB_SHASUM 12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef
 ENV FTC_VERSION v0.17.0.1
@@ -33,7 +35,7 @@ RUN apk add --no-cache --virtual .build-deps \
         --enable-compat185 \
         --disable-shared \
         --with-pic \
-    && make install \
+    && make install -j${BUILD_JOBS} \
     # Obtain and build Feathercoin
     && git clone --depth 50 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
     && cd ${BUILD_DIR}/feathercoin \
@@ -45,25 +47,25 @@ RUN apk add --no-cache --virtual .build-deps \
     && mkdir -p ${BUILD_DIR}/feathercoin/depends/patches/openssl \
     && cp -f /patches/0001-fix-for-musl.patch ${BUILD_DIR}/feathercoin/depends/patches/openssl/0001-fix-for-musl.patch \
     && cp -f /patches/openssl.mk ${BUILD_DIR}/feathercoin/depends/packages/openssl.mk \
-    # Build from dependable sources...
+    # Build required dependencies...
     && cd ${BUILD_DIR}/feathercoin/depends \
-    && make HOST=x86_64-pc-linux-musl NO_QT=1 -j4 \
-    ## Build Feathercoin
+    && make HOST=${BUILD_PLATFORM} NO_QT=1 -j${BUILD_JOBS} \
+    ## Configure and build Feathercoin
     && cd ${BUILD_DIR}/feathercoin \
     && ./autogen.sh \
     && ./configure \
-        --prefix=${BUILD_DIR}/feathercoin/depends/x86_64-pc-linux-musl \
+        --prefix=${BUILD_DIR}/feathercoin/depends/${BUILD_PLATFORM} \
         --disable-shared \
         --disable-asm \
         --enable-static \
         --without-gui \
-    # Compile, shrink and install binaries...
-    && make -j4 \
+    && make -j${BUILD_JOBS} \
     && make install \
-    && strip -s $BUILD_DIR/feathercoin/depends/x86_64-pc-linux-musl/bin/feathercoind \
-    && strip -s $BUILD_DIR/feathercoin/depends/x86_64-pc-linux-musl/bin/feathercoin-cli \
-    && strip -s $BUILD_DIR/feathercoin/depends/x86_64-pc-linux-musl/bin/feathercoin-tx \
-    && cp $BUILD_DIR/feathercoin/depends/x86_64-pc-linux-musl/bin/feather* /usr/bin/ \
+    # Shrink and install binaries...
+    && strip -s $BUILD_DIR/feathercoin/depends/${BUILD_PLATFORM}/bin/feathercoind \
+    && strip -s $BUILD_DIR/feathercoin/depends/${BUILD_PLATFORM}/bin/feathercoin-cli \
+    && strip -s $BUILD_DIR/feathercoin/depends/${BUILD_PLATFORM}/bin/feathercoin-tx \
+    && cp $BUILD_DIR/feathercoin/depends/${BUILD_PLATFORM}/bin/feather* /usr/bin/ \
     # Clean up dev dependencies
     && cd ${BUILD_DIR}/db-${DB_VERSION}/build_unix \
     && make uninstall \
