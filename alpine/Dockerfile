@@ -35,7 +35,7 @@ RUN apk add --no-cache --virtual .build-deps \
         --enable-compat185 \
         --disable-shared \
         --with-pic \
-    && make install -j${BUILD_JOBS} \
+    && make install \
     # Obtain and build Feathercoin
     && git clone --depth 50 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
     && cd ${BUILD_DIR}/feathercoin \
