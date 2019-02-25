@@ -6,7 +6,7 @@ ENV BUILD_JOBS 4
 ENV BUILD_PLATFORM x86_64-linux-musl
 ENV DB_VERSION 4.8.30.NC
 ENV DB_SHASUM 12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef
-ENV FTC_VERSION v0.17.0.1
+ENV FTC_VERSION v0.17.0.2
 
 # Add musl monkey patches...
 COPY openssl.mk /patches/

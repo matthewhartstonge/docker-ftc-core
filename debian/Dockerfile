@@ -29,8 +29,8 @@ RUN apt-get update && apt-get install --no-install-recommends --no-upgrade -y ${
     && make install
 
 # Obtain and build Feathercoin
-ENV FTC_VERSION v0.17.0.1
-RUN git clone --depth 50 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
+ENV FTC_VERSION v0.17.0.2
+RUN git clone --depth 1 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
     && cd ${BUILD_DIR}/feathercoin \
     && git fetch --tags \
     && git checkout ${FTC_VERSION} \
