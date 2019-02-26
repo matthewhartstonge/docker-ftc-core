@@ -1,5 +1,5 @@
 FROM alpine:latest
-LABEL maintainer Matthew Hartstonge <matt@mykro.co.nz>
+LABEL maintainer="Matthew Hartstonge <matt@mykro.co.nz>"
 
 ENV BUILD_DIR /tmp
 ENV BUILD_JOBS 4
@@ -9,8 +9,7 @@ ENV DB_SHASUM 12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef
 ENV FTC_VERSION v0.17.0.2
 
 # Add musl monkey patches...
-COPY openssl.mk /patches/
-COPY 0001-fix-for-musl.patch /patches/
+COPY patches /patches/
 RUN apk add --no-cache --virtual .build-deps \
         # Build tooling
         autoconf \
@@ -47,6 +46,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && mkdir -p ${BUILD_DIR}/feathercoin/depends/patches/openssl \
     && cp -f /patches/0001-fix-for-musl.patch ${BUILD_DIR}/feathercoin/depends/patches/openssl/0001-fix-for-musl.patch \
     && cp -f /patches/openssl.mk ${BUILD_DIR}/feathercoin/depends/packages/openssl.mk \
+    && cp -f /patches/0002-disable-pthread_set_name_np.patch ${BUILD_DIR}/feathercoin/depends/patches/zeromq/0002-disable-pthread_set_name_np.patch \
     # Build required dependencies...
     && cd ${BUILD_DIR}/feathercoin/depends \
     && make HOST=${BUILD_PLATFORM} NO_QT=1 -j${BUILD_JOBS} \
@@ -71,7 +71,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && make uninstall \
     && rm -Rf ${BUILD_DIR} \
     && apk del .build-deps \
-    # Install required libs \
+    # Install required libs
     && apk add --no-cache \
         libgcc \
         libstdc++
