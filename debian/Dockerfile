@@ -3,7 +3,6 @@
 # As such, the flow is broken up to better utilize build caching, as the only
 # thing that should change is the version of feathercoin!
 FROM debian:9-slim AS buildr
-LABEL maintainer Matthew Hartstonge <matt@mykro.co.nz>
 
 ENV BUILD_DIR /tmp
 ENV BUILD_JOBS 4
@@ -30,7 +29,7 @@ RUN apt-get update && apt-get install --no-install-recommends --no-upgrade -y ${
 
 # Obtain and build Feathercoin
 ENV FTC_VERSION v0.17.0.2
-RUN git clone --depth 1 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
+RUN git clone --depth 50 https://github.com/feathercoin/feathercoin.git ${BUILD_DIR}/feathercoin \
     && cd ${BUILD_DIR}/feathercoin \
     && git fetch --tags \
     && git checkout ${FTC_VERSION} \
@@ -60,6 +59,7 @@ RUN git clone --depth 1 https://github.com/feathercoin/feathercoin.git ${BUILD_D
 
 # Deploy container
 FROM debian:9-slim
+LABEL maintainer="Matthew Hartstonge <matt@mykro.co.nz>"
 COPY --from=buildr /dist /usr/local/bin
 EXPOSE 9336 9337 19336 19337
 CMD ["feathercoind"]
