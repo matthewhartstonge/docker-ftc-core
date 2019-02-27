@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.9
 LABEL maintainer="Matthew Hartstonge <matt@mykro.co.nz>"
 
 ENV BUILD_DIR="/tmp" \
@@ -19,6 +19,7 @@ RUN apk add --no-cache --virtual .build-deps \
         git \
         gzip \
         libtool \
+        pkgconfig \
         make \
         tar \
     # Obtain and build BerkleyDB
