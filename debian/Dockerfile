@@ -4,12 +4,12 @@
 # thing that should change is the version of feathercoin!
 FROM debian:9-slim AS buildr
 
-ENV BUILD_DIR /tmp
-ENV BUILD_JOBS 4
-ENV BUILD_PACKAGES autoconf automake binutils-gold bzip2 bsdmainutils ca-certificates cmake curl git g++-multilib libtool make patch pkg-config python3 wget
-ENV BUILD_PLATFORM x86_64-linux-gnu
-ENV DB_VERSION 4.8.30.NC
-ENV DB_SHASUM 12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef
+ENV BUILD_DIR="/tmp" \
+    BUILD_JOBS="4" \
+    BUILD_PACKAGES="autoconf automake binutils-gold bzip2 bsdmainutils ca-certificates cmake curl git g++-multilib libtool make patch pkg-config python3 wget" \
+    BUILD_PLATFORM="x86_64-linux-gnu" \
+    DB_VERSION="4.8.30.NC" \
+    DB_SHASUM="12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef"
 
 RUN apt-get update && apt-get install --no-install-recommends --no-upgrade -y ${BUILD_PACKAGES} \
     # Obtain and build BerkleyDB
